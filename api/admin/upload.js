@@ -42,12 +42,27 @@ module.exports = async (req, res) => {
           return '';
         };
 
-        // Date can come as JS Date object when cellDates:true
-        let rawDate = get('date');
-        if (row['date'] instanceof Date) {
-          rawDate = row['date'].toISOString().split('T')[0];
-        } else if (row['Date'] instanceof Date) {
-          rawDate = row['Date'].toISOString().split('T')[0];
+        // Normalise date to YYYY-MM-DD for PostgreSQL
+        let rawDate = '';
+        const dateVal = Object.keys(row).find(k => k.trim().toLowerCase() === 'date');
+        const dv = dateVal ? row[dateVal] : undefined;
+        if (dv instanceof Date) {
+          rawDate = dv.toISOString().split('T')[0];
+        } else if (typeof dv === 'number') {
+          // Excel serial date
+          const d = XLSX.SSF.parse_date_code(dv);
+          rawDate = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+        } else if (dv) {
+          const s = String(dv).trim();
+          // DD/MM/YYYY or DD-MM-YYYY
+          const dmyMatch = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+          if (dmyMatch) {
+            rawDate = `${dmyMatch[3]}-${dmyMatch[2].padStart(2,'0')}-${dmyMatch[1].padStart(2,'0')}`;
+          } else {
+            // Try native parse (handles YYYY-MM-DD, "30 May 2026", etc.)
+            const parsed = new Date(s);
+            rawDate = isNaN(parsed) ? s : parsed.toISOString().split('T')[0];
+          }
         }
 
         return {
