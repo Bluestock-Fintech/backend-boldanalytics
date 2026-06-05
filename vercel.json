@@ -1,8 +1,3 @@
 {
-  "version": 2,
-  "routes": [
-    { "src": "/api/admin/upload", "dest": "/api/admin/upload.js" },
-    { "src": "/api/admin/confirm", "dest": "/api/admin/confirm.js" },
-    { "src": "/api/verify/([^/]+)", "dest": "/api/verify/[docId].js?docId=$1" }
-  ]
+  "version": 2
 }
