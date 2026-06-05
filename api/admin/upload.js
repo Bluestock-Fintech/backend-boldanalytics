@@ -68,6 +68,7 @@ module.exports = async (req, res) => {
         return {
           doc_id: get('doc_id', 'docid', 'doc id', 'document id'),
           name: get('name'),
+          email: get('email', 'mail', 'email id', 'email address'),
           date: rawDate,
           role: get('role', 'designation', 'position'),
           duration: get('duration', 'internship duration', 'period'),

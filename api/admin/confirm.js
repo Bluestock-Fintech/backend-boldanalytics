@@ -19,17 +19,22 @@ module.exports = async (req, res) => {
     return res.status(422).json({ error: 'No rows provided' });
   }
 
-  // Ensure table exists
+  // Ensure table exists with email column
   await pool.query(`
     CREATE TABLE IF NOT EXISTS offer_letters (
       id        SERIAL PRIMARY KEY,
       doc_id    VARCHAR(20) NOT NULL UNIQUE,
       name      VARCHAR(100) NOT NULL,
+      email     VARCHAR(150) DEFAULT '',
       date      DATE NOT NULL,
       role      VARCHAR(100) NOT NULL,
       duration  VARCHAR(100) NOT NULL,
       remark    VARCHAR(100) NOT NULL
     )
+  `);
+  // Add email column if upgrading existing table
+  await pool.query(`
+    ALTER TABLE offer_letters ADD COLUMN IF NOT EXISTS email VARCHAR(150) DEFAULT ''
   `);
 
   const client = await pool.connect();
@@ -40,14 +45,14 @@ module.exports = async (req, res) => {
     let skipped = 0;
 
     for (const row of rows) {
-      const { doc_id, name, date, role, duration, remark } = row;
+      const { doc_id, name, email, date, role, duration, remark } = row;
       if (!doc_id || !name || !date) { skipped++; continue; }
 
       const result = await client.query(
-        `INSERT INTO offer_letters (doc_id, name, date, role, duration, remark)
-         VALUES ($1, $2, $3, $4, $5, $6)
+        `INSERT INTO offer_letters (doc_id, name, email, date, role, duration, remark)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          ON CONFLICT (doc_id) DO NOTHING`,
-        [doc_id, name, date, role, duration, remark]
+        [doc_id, name, email || '', date, role, duration, remark]
       );
       if (result.rowCount > 0) inserted++;
       else skipped++;
