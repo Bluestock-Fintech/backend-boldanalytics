@@ -1,0 +1,15 @@
+{
+  "name": "backend-boldanalytics",
+  "version": "1.0.0",
+  "description": "Bold Analytics backend API - Offer Letter verification",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node -e \"require('./dev-server')\"",
+    "start": "node dev-server.js"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "pg": "^8.11.3",
+    "xlsx": "^0.18.5"
+  }
+}

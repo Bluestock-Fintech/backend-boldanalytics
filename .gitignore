@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-error.log
+*.log
+
+# Build output
+dist/
+build/
+.next/
+out/
+coverage/
+.cache/
+
+# Vercel
+.vercel/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# OS files
+.DS_Store
+
+# Editor directories
+.vscode/
+.idea/
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Misc
+/tmp/
+.pnpm-store/
